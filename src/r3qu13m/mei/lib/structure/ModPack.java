@@ -16,7 +16,7 @@ public class ModPack implements DiscordSerializable {
 	private List<Mod> mods;
 	private int version;
 
-	public ModPack(List<Mod> par1Mods, int par2Version) {
+	public ModPack(final List<Mod> par1Mods, final int par2Version) {
 		this.id = UUID.randomUUID();
 		this.mods = new ArrayList<>();
 		this.version = par2Version;
@@ -36,27 +36,27 @@ public class ModPack implements DiscordSerializable {
 		return this.version;
 	}
 
-	public ModPack with(Mod mod) {
+	public ModPack with(final Mod mod) {
 		if (this.has(mod)) {
 			return this;
 		}
 
-		List<Mod> mods = new ArrayList<>();
+		final List<Mod> mods = new ArrayList<>();
 		mods.addAll(this.mods);
 		mods.add(mod);
 		return new ModPack(mods, this.version + 1);
 	}
 
-	public boolean has(Mod mod) {
+	public boolean has(final Mod mod) {
 		return this.mods.contains(mod);
 	}
 
-	public ModPack without(Mod mod) {
+	public ModPack without(final Mod mod) {
 		if (!this.has(mod)) {
 			return this;
 		}
 
-		List<Mod> mods = new ArrayList<>();
+		final List<Mod> mods = new ArrayList<>();
 		mods.addAll(this.mods);
 		mods.remove(mod);
 		return new ModPack(mods, this.version + 1);
@@ -81,19 +81,19 @@ public class ModPack implements DiscordSerializable {
 	}
 
 	@Override
-	public void serialize(DataOutputStream dos) throws IOException {
+	public void serialize(final DataOutputStream dos) throws IOException {
 		dos.writeUTF(this.id.toString());
 		dos.writeInt(this.mods.size());
-		for (Mod mod : this.mods) {
+		for (final Mod mod : this.mods) {
 			dos.writeUTF(mod.getID().toString());
 		}
 		dos.writeInt(this.version);
 	}
 
 	@Override
-	public void unserialize(DataInputStream dis) throws IOException {
+	public void unserialize(final DataInputStream dis) throws IOException {
 		this.id = UUID.fromString(dis.readUTF());
-		int n = dis.readInt();
+		final int n = dis.readInt();
 		this.mods = new ArrayList<>();
 		for (int i = 0; i < n; i++) {
 			this.mods.add(MeiServerLib.instance().getMod(UUID.fromString(dis.readUTF())));
