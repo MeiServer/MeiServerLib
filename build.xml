@@ -25,7 +25,7 @@
 		<javac destdir="${bindir}" includeantruntime="false">
 			<src path="${srcdir}" />
 			<classpath>
-				<fileset includes="${lib.classpath}" />
+				<fileset refid="lib.classpath.set" />
 			</classpath>
 		</javac>
 	</target>
