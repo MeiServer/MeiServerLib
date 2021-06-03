@@ -1,5 +1,103 @@
 package r3qu13m.mei.lib.structure;
 
-public class Mod {
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
+import r3qu13m.mei.lib.DiscordSerializable;
+import r3qu13m.mei.lib.MeiServerLib;
+
+public class Mod implements DiscordSerializable {
+
+	private UUID id;
+	private String mod;
+	private String version;
+	private List<DistributeFile> files;
+
+	public Mod(String par1Mod, String par2Version, List<DistributeFile> par3Files) {
+		this.id = UUID.randomUUID();
+		this.mod = par1Mod;
+		this.version = par2Version;
+		this.files = new ArrayList<>();
+		this.files.addAll(par3Files);
+	}
+
+	protected Mod() {
+		this(null, null, new ArrayList<>());
+	}
+
+	public UUID getID() {
+		return this.id;
+	}
+
+	public String getVersion() {
+		return this.version;
+	}
+
+	public String getModName() {
+		return this.mod;
+	}
+
+	public List<DistributeFile> getFiles() {
+		return Collections.unmodifiableList(this.files);
+	}
+
+	public boolean hasFile(DistributeFile file) {
+		return this.files.contains(file);
+	}
+
+	public void addFile(DistributeFile file) {
+		if (!this.hasFile(file)) {
+			this.files.add(file);
+		}
+	}
+
+	public void removeFile(DistributeFile file) {
+		this.files.remove(file);
+	}
+
+	@Override
+	public boolean equals(final Object other) {
+		if (other == null) {
+			return false;
+		}
+		if (!(other instanceof Mod)) {
+			return false;
+		}
+		final Mod mod = (Mod) other;
+		return mod.getID().equals(this.id) && mod.getModName().equals(this.mod) && mod.getVersion().equals(this.version)
+				&& mod.getFiles().equals(this.files);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.id.hashCode();
+	}
+
+	@Override
+	public void serialize(DataOutputStream dos) throws IOException {
+		dos.writeUTF(this.id.toString());
+		dos.writeUTF(this.mod);
+		dos.writeUTF(this.version);
+		dos.writeInt(this.files.size());
+		for (DistributeFile file : this.files) {
+			dos.writeUTF(file.getID().toString());
+		}
+	}
+
+	@Override
+	public void unserialize(DataInputStream dis) throws IOException {
+		this.id = UUID.fromString(dis.readUTF());
+		this.mod = dis.readUTF();
+		this.version = dis.readUTF();
+		int n = dis.readInt();
+		this.files = new ArrayList<>();
+		for (int i = 0; i < n; i++) {
+			this.files.add(MeiServerLib.instance().getDistributeFile(UUID.fromString(dis.readUTF())));
+		}
+	}
 }

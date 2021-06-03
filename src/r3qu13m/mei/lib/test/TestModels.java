@@ -2,15 +2,21 @@ package r3qu13m.mei.lib.test;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.junit.Test;
 
 import junit.framework.TestCase;
 import r3qu13m.mei.lib.DiscordSerializable;
+import r3qu13m.mei.lib.MeiServerLib;
 import r3qu13m.mei.lib.structure.DataType;
 import r3qu13m.mei.lib.structure.DistributeFile;
 import r3qu13m.mei.lib.structure.MeiPlayer;
+import r3qu13m.mei.lib.structure.Mod;
 
 public class TestModels extends TestCase {
 	private static void setUUID(Class<?> cls, Object obj, String fieldName, UUID id) {
@@ -71,5 +77,46 @@ public class TestModels extends TestCase {
 
 		TestCase.assertEquals(DiscordSerializable.unserialize(DiscordSerializable.serialize(df), DistributeFile.class),
 				df);
+	}
+
+	@Test
+	public void testMod() {
+		final UUID id = UUID.fromString("7c1b94c8-9b23-480f-aa2b-425fe469254d");
+		DistributeFile file1 = new DistributeFile(DataType.MOD, "EE2", "hash", "http://example.com/hogefuga.zip");
+		DistributeFile file2 = new DistributeFile(DataType.MOD, "RP2_1", "hash", "http://example.com/hogefuga.zip");
+		DistributeFile file3 = new DistributeFile(DataType.MOD, "RP2_2", "hash", "http://example.com/hogefuga.zip");
+		Map<UUID, DistributeFile> dfMap = new HashMap<>();
+		dfMap.put(file1.getID(), file1);
+		dfMap.put(file2.getID(), file2);
+		dfMap.put(file3.getID(), file3);
+		MeiServerLib.instance().setMap(dfMap::get);
+
+		Mod ee2 = new Mod("EE2", "v0.9", Arrays.asList(file1));
+		TestModels.setUUID(Mod.class, ee2, "id", id);
+
+		TestCase.assertEquals(ee2.getID(), id);
+		TestCase.assertEquals(ee2.getModName(), "EE2");
+		TestCase.assertEquals(ee2.getVersion(), "v0.9");
+		TestCase.assertEquals(ee2.getFiles(), Arrays.asList(file1));
+
+		Mod rp2 = new Mod("RP2", "v1", new ArrayList<>());
+		TestCase.assertEquals(rp2.getFiles(), Arrays.asList());
+
+		rp2.addFile(file2);
+		rp2.addFile(file3);
+		TestCase.assertEquals(rp2.getFiles(), Arrays.asList(file2, file3));
+
+		rp2.addFile(file3);
+		TestCase.assertEquals(rp2.getFiles(), Arrays.asList(file2, file3));
+
+		rp2.removeFile(file3);
+		TestCase.assertEquals(rp2.getFiles(), Arrays.asList(file2));
+
+		rp2.removeFile(file2);
+		TestCase.assertEquals(rp2.getFiles(), Arrays.asList());
+
+		rp2.addFile(file2);
+		rp2.addFile(file3);
+		TestCase.assertEquals(DiscordSerializable.unserialize(DiscordSerializable.serialize(rp2), Mod.class), rp2);
 	}
 }

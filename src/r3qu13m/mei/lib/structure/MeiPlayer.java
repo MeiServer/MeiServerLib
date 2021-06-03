@@ -35,20 +35,6 @@ public class MeiPlayer implements DiscordSerializable {
 	}
 
 	@Override
-	public void serialize(final DataOutputStream dos) throws IOException {
-		dos.writeUTF(this.id.toString());
-		dos.writeUTF(this.name);
-		dos.writeUTF(this.discordId);
-	}
-
-	@Override
-	public void unserialize(final DataInputStream dis) throws IOException {
-		this.id = UUID.fromString(dis.readUTF());
-		this.name = dis.readUTF();
-		this.discordId = dis.readUTF();
-	}
-
-	@Override
 	public boolean equals(final Object other) {
 		if (other == null) {
 			return false;
@@ -64,5 +50,19 @@ public class MeiPlayer implements DiscordSerializable {
 	@Override
 	public int hashCode() {
 		return this.id.hashCode();
+	}
+
+	@Override
+	public void serialize(final DataOutputStream dos) throws IOException {
+		dos.writeUTF(this.id.toString());
+		dos.writeUTF(this.name);
+		dos.writeUTF(this.discordId);
+	}
+
+	@Override
+	public void unserialize(final DataInputStream dis) throws IOException {
+		this.id = UUID.fromString(dis.readUTF());
+		this.name = dis.readUTF();
+		this.discordId = dis.readUTF();
 	}
 }
