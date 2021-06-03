@@ -17,6 +17,7 @@ import r3qu13m.mei.lib.structure.DataType;
 import r3qu13m.mei.lib.structure.DistributeFile;
 import r3qu13m.mei.lib.structure.MeiPlayer;
 import r3qu13m.mei.lib.structure.Mod;
+import r3qu13m.mei.lib.structure.ModPack;
 
 public class TestModels extends TestCase {
 	private static void setUUID(final Class<?> cls, final Object obj, final String fieldName, final UUID id) {
@@ -83,13 +84,16 @@ public class TestModels extends TestCase {
 	public void testMod() {
 		final UUID id = UUID.fromString("7c1b94c8-9b23-480f-aa2b-425fe469254d");
 		final DistributeFile file1 = new DistributeFile(DataType.MOD, "EE2", "hash", "http://example.com/hogefuga.zip");
-		final DistributeFile file2 = new DistributeFile(DataType.MOD, "RP2_1", "hash", "http://example.com/hogefuga.zip");
-		final DistributeFile file3 = new DistributeFile(DataType.MOD, "RP2_2", "hash", "http://example.com/hogefuga.zip");
+		final DistributeFile file2 = new DistributeFile(DataType.MOD, "RP2_1", "hash",
+				"http://example.com/hogefuga.zip");
+		final DistributeFile file3 = new DistributeFile(DataType.MOD, "RP2_2", "hash",
+				"http://example.com/hogefuga.zip");
+
 		final Map<UUID, DistributeFile> dfMap = new HashMap<>();
 		dfMap.put(file1.getID(), file1);
 		dfMap.put(file2.getID(), file2);
 		dfMap.put(file3.getID(), file3);
-		MeiServerLib.instance().setMap(dfMap::get);
+		MeiServerLib.instance().setDistributeFileMap(dfMap::get);
 
 		final Mod ee2 = new Mod("EE2", "v0.9", Arrays.asList(file1));
 		TestModels.setUUID(Mod.class, ee2, "id", id);
@@ -105,18 +109,67 @@ public class TestModels extends TestCase {
 		rp2.addFile(file2);
 		rp2.addFile(file3);
 		TestCase.assertEquals(rp2.getFiles(), Arrays.asList(file2, file3));
+		TestCase.assertTrue(rp2.hasFile(file2));
+		TestCase.assertTrue(rp2.hasFile(file3));
 
 		rp2.addFile(file3);
 		TestCase.assertEquals(rp2.getFiles(), Arrays.asList(file2, file3));
 
 		rp2.removeFile(file3);
 		TestCase.assertEquals(rp2.getFiles(), Arrays.asList(file2));
+		TestCase.assertFalse(rp2.hasFile(file3));
 
 		rp2.removeFile(file2);
 		TestCase.assertEquals(rp2.getFiles(), Arrays.asList());
+		TestCase.assertFalse(rp2.hasFile(file2));
 
 		rp2.addFile(file2);
 		rp2.addFile(file3);
 		TestCase.assertEquals(DiscordSerializable.unserialize(DiscordSerializable.serialize(rp2), Mod.class), rp2);
+	}
+
+	@Test
+	public void testModPack() {
+		final UUID id = UUID.fromString("7c1b94c8-9b23-480f-aa2b-425fe469254d");
+		final DistributeFile file1 = new DistributeFile(DataType.MOD, "EE2", "hash", "http://example.com/hogefuga.zip");
+		final DistributeFile file2 = new DistributeFile(DataType.MOD, "RP2_1", "hash",
+				"http://example.com/hogefuga.zip");
+		final DistributeFile file3 = new DistributeFile(DataType.MOD, "RP2_2", "hash",
+				"http://example.com/hogefuga.zip");
+
+		final Map<UUID, DistributeFile> dfMap = new HashMap<>();
+		dfMap.put(file1.getID(), file1);
+		dfMap.put(file2.getID(), file2);
+		dfMap.put(file3.getID(), file3);
+		MeiServerLib.instance().setDistributeFileMap(dfMap::get);
+
+		final Mod ee2 = new Mod("EE2", "v0.9", Arrays.asList(file1));
+		final Mod rp2 = new Mod("RP2", "v1", Arrays.asList(file2, file3));
+
+		final Map<UUID, Mod> modMap = new HashMap<>();
+		modMap.put(ee2.getID(), ee2);
+		modMap.put(rp2.getID(), rp2);
+		MeiServerLib.instance().setModMap(modMap::get);
+
+		final ModPack pack = new ModPack(Arrays.asList(ee2), 1);
+		TestModels.setUUID(ModPack.class, pack, "id", id);
+
+		TestCase.assertEquals(pack.getID(), id);
+		TestCase.assertEquals(pack.getVersion(), 1);
+		TestCase.assertEquals(pack.getMods(), Arrays.asList(ee2));
+		TestCase.assertTrue(pack.has(ee2));
+		TestCase.assertFalse(pack.has(rp2));
+
+		final ModPack pack2 = pack.with(rp2);
+		TestCase.assertEquals(pack2.getVersion(), 2);
+		TestCase.assertEquals(pack2.getMods(), Arrays.asList(ee2, rp2));
+		TestCase.assertTrue(pack2.has(ee2));
+		TestCase.assertTrue(pack2.has(rp2));
+
+		final ModPack pack3 = pack2.without(ee2);
+		TestCase.assertEquals(pack3.getVersion(), 3);
+		TestCase.assertEquals(pack3.getMods(), Arrays.asList(rp2));
+		TestCase.assertFalse(pack3.has(ee2));
+		TestCase.assertTrue(pack3.has(rp2));
 	}
 }
