@@ -18,7 +18,7 @@ public class Mod implements DiscordSerializable {
 	private String version;
 	private List<DistributeFile> files;
 
-	public Mod(String par1Mod, String par2Version, List<DistributeFile> par3Files) {
+	public Mod(final String par1Mod, final String par2Version, final List<DistributeFile> par3Files) {
 		this.id = UUID.randomUUID();
 		this.mod = par1Mod;
 		this.version = par2Version;
@@ -46,17 +46,17 @@ public class Mod implements DiscordSerializable {
 		return Collections.unmodifiableList(this.files);
 	}
 
-	public boolean hasFile(DistributeFile file) {
+	public boolean hasFile(final DistributeFile file) {
 		return this.files.contains(file);
 	}
 
-	public void addFile(DistributeFile file) {
+	public void addFile(final DistributeFile file) {
 		if (!this.hasFile(file)) {
 			this.files.add(file);
 		}
 	}
 
-	public void removeFile(DistributeFile file) {
+	public void removeFile(final DistributeFile file) {
 		this.files.remove(file);
 	}
 
@@ -79,22 +79,22 @@ public class Mod implements DiscordSerializable {
 	}
 
 	@Override
-	public void serialize(DataOutputStream dos) throws IOException {
+	public void serialize(final DataOutputStream dos) throws IOException {
 		dos.writeUTF(this.id.toString());
 		dos.writeUTF(this.mod);
 		dos.writeUTF(this.version);
 		dos.writeInt(this.files.size());
-		for (DistributeFile file : this.files) {
+		for (final DistributeFile file : this.files) {
 			dos.writeUTF(file.getID().toString());
 		}
 	}
 
 	@Override
-	public void unserialize(DataInputStream dis) throws IOException {
+	public void unserialize(final DataInputStream dis) throws IOException {
 		this.id = UUID.fromString(dis.readUTF());
 		this.mod = dis.readUTF();
 		this.version = dis.readUTF();
-		int n = dis.readInt();
+		final int n = dis.readInt();
 		this.files = new ArrayList<>();
 		for (int i = 0; i < n; i++) {
 			this.files.add(MeiServerLib.instance().getDistributeFile(UUID.fromString(dis.readUTF())));

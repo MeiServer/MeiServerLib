@@ -16,7 +16,7 @@ public class DistributeFile implements DiscordSerializable {
 	private String hash;
 	private String url;
 
-	public DistributeFile(DataType par1Type, String par2Name, String par3Hash, String par4Url) {
+	public DistributeFile(final DataType par1Type, final String par2Name, final String par3Hash, final String par4Url) {
 		this.id = UUID.randomUUID();
 		this.type = par1Type;
 		this.name = par2Name;
@@ -24,7 +24,7 @@ public class DistributeFile implements DiscordSerializable {
 		this.url = par4Url;
 	}
 
-	public DistributeFile(DataType par1Type, String par2Name, String par3Hash, URL par4Url) {
+	public DistributeFile(final DataType par1Type, final String par2Name, final String par3Hash, final URL par4Url) {
 		this(par1Type, par2Name, par3Hash, par4Url.toExternalForm());
 	}
 
@@ -51,20 +51,20 @@ public class DistributeFile implements DiscordSerializable {
 	public URL getURL() {
 		try {
 			return new URL(this.url);
-		} catch (MalformedURLException e) {
+		} catch (final MalformedURLException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
 	@Override
-	public boolean equals(Object other) {
+	public boolean equals(final Object other) {
 		if (other == null) {
 			return false;
 		}
 		if (!(other instanceof DistributeFile)) {
 			return false;
 		}
-		DistributeFile df = (DistributeFile) other;
+		final DistributeFile df = (DistributeFile) other;
 		return df.getID().equals(this.id) && df.getType().equals(this.type) && df.getName().equals(this.name)
 				&& df.getHash().equals(this.hash) && df.url.equals(this.url);
 	}
@@ -75,7 +75,7 @@ public class DistributeFile implements DiscordSerializable {
 	}
 
 	@Override
-	public void serialize(DataOutputStream dos) throws IOException {
+	public void serialize(final DataOutputStream dos) throws IOException {
 		dos.writeUTF(this.id.toString());
 		dos.writeInt(this.type.ordinal());
 		dos.writeUTF(this.name);
@@ -84,7 +84,7 @@ public class DistributeFile implements DiscordSerializable {
 	}
 
 	@Override
-	public void unserialize(DataInputStream dis) throws IOException {
+	public void unserialize(final DataInputStream dis) throws IOException {
 		this.id = UUID.fromString(dis.readUTF());
 		this.type = DataType.values()[dis.readInt()];
 		this.name = dis.readUTF();

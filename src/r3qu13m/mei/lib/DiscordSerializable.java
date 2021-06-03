@@ -43,7 +43,7 @@ public interface DiscordSerializable {
 		final DataInputStream dis = new DataInputStream(bis);
 		T obj = null;
 		try {
-			if (Serializable.class.isAssignableFrom((Class<?>) cls)) {
+			if (Serializable.class.isAssignableFrom(cls)) {
 				final ObjectInputStream ois = new ObjectInputStream(dis);
 				obj = (T) ois.readObject();
 			} else if (DiscordSerializable.class.isAssignableFrom(cls)) {

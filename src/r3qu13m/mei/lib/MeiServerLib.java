@@ -21,7 +21,7 @@ public final class MeiServerLib {
 
 	}
 
-	synchronized public DistributeFile getDistributeFile(UUID id) {
+	synchronized public DistributeFile getDistributeFile(final UUID id) {
 		if (this.dfMap == null) {
 			throw new RuntimeException("dfMap must not null");
 		}
@@ -29,7 +29,7 @@ public final class MeiServerLib {
 		return this.dfMap.apply(id);
 	}
 
-	synchronized public void setMap(Function<UUID, DistributeFile> func) {
+	synchronized public void setMap(final Function<UUID, DistributeFile> func) {
 		this.dfMap = func;
 	}
 }

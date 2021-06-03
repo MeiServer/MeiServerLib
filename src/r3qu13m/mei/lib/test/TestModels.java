@@ -19,9 +19,9 @@ import r3qu13m.mei.lib.structure.MeiPlayer;
 import r3qu13m.mei.lib.structure.Mod;
 
 public class TestModels extends TestCase {
-	private static void setUUID(Class<?> cls, Object obj, String fieldName, UUID id) {
+	private static void setUUID(final Class<?> cls, final Object obj, final String fieldName, final UUID id) {
 		try {
-			Field f = cls.getDeclaredField(fieldName);
+			final Field f = cls.getDeclaredField(fieldName);
 			if (f != null) {
 				f.setAccessible(true);
 				f.set(obj, id);
@@ -39,7 +39,7 @@ public class TestModels extends TestCase {
 		TestCase.assertEquals(DataType.COREMOD.getDestDir(dotMC).get(), new File(dotMC, "coremods"));
 		TestCase.assertFalse(DataType.JAR.getDestDir(dotMC).isPresent());
 
-		for (DataType v : DataType.values()) {
+		for (final DataType v : DataType.values()) {
 			TestCase.assertEquals(DiscordSerializable.unserialize(DiscordSerializable.serialize(v), DataType.class), v);
 		}
 	}
@@ -65,7 +65,7 @@ public class TestModels extends TestCase {
 	@Test
 	public void testDistributeFile() {
 		final UUID id = UUID.fromString("7c1b94c8-9b23-480f-aa2b-425fe469254d");
-		DistributeFile df = new DistributeFile(DataType.MOD, "EE2_for_147_v0.9.zip",
+		final DistributeFile df = new DistributeFile(DataType.MOD, "EE2_for_147_v0.9.zip",
 				"7d0758f0ede7edb7d23a014405891c5b09e77615", "http://example.com/mods/EE2_for_147_v0.9.zip");
 		TestModels.setUUID(DistributeFile.class, df, "id", id);
 
@@ -82,16 +82,16 @@ public class TestModels extends TestCase {
 	@Test
 	public void testMod() {
 		final UUID id = UUID.fromString("7c1b94c8-9b23-480f-aa2b-425fe469254d");
-		DistributeFile file1 = new DistributeFile(DataType.MOD, "EE2", "hash", "http://example.com/hogefuga.zip");
-		DistributeFile file2 = new DistributeFile(DataType.MOD, "RP2_1", "hash", "http://example.com/hogefuga.zip");
-		DistributeFile file3 = new DistributeFile(DataType.MOD, "RP2_2", "hash", "http://example.com/hogefuga.zip");
-		Map<UUID, DistributeFile> dfMap = new HashMap<>();
+		final DistributeFile file1 = new DistributeFile(DataType.MOD, "EE2", "hash", "http://example.com/hogefuga.zip");
+		final DistributeFile file2 = new DistributeFile(DataType.MOD, "RP2_1", "hash", "http://example.com/hogefuga.zip");
+		final DistributeFile file3 = new DistributeFile(DataType.MOD, "RP2_2", "hash", "http://example.com/hogefuga.zip");
+		final Map<UUID, DistributeFile> dfMap = new HashMap<>();
 		dfMap.put(file1.getID(), file1);
 		dfMap.put(file2.getID(), file2);
 		dfMap.put(file3.getID(), file3);
 		MeiServerLib.instance().setMap(dfMap::get);
 
-		Mod ee2 = new Mod("EE2", "v0.9", Arrays.asList(file1));
+		final Mod ee2 = new Mod("EE2", "v0.9", Arrays.asList(file1));
 		TestModels.setUUID(Mod.class, ee2, "id", id);
 
 		TestCase.assertEquals(ee2.getID(), id);
@@ -99,7 +99,7 @@ public class TestModels extends TestCase {
 		TestCase.assertEquals(ee2.getVersion(), "v0.9");
 		TestCase.assertEquals(ee2.getFiles(), Arrays.asList(file1));
 
-		Mod rp2 = new Mod("RP2", "v1", new ArrayList<>());
+		final Mod rp2 = new Mod("RP2", "v1", new ArrayList<>());
 		TestCase.assertEquals(rp2.getFiles(), Arrays.asList());
 
 		rp2.addFile(file2);
