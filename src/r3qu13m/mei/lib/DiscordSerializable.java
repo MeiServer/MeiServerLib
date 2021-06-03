@@ -5,6 +5,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Base64;
 
 abstract public class DiscordSerializable {
@@ -26,9 +28,12 @@ abstract public class DiscordSerializable {
 		ByteArrayInputStream bis = new ByteArrayInputStream(Base64.getDecoder().decode(encodedData));
 		T obj = null;
 		try {
-			obj = cls.newInstance();
+			Constructor<T> constructor = cls.getDeclaredConstructor();
+			constructor.setAccessible(true);
+			obj = constructor.newInstance();
 			obj.unserialize(new DataInputStream(bis));
-		} catch (InstantiationException | IllegalAccessException | IOException e) {
+		} catch (InstantiationException | IllegalAccessException | IOException | NoSuchMethodException
+				| SecurityException | IllegalArgumentException | InvocationTargetException e) {
 			throw new RuntimeException(e);
 		}
 		return obj;

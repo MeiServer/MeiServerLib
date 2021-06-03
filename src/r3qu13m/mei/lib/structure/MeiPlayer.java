@@ -18,6 +18,10 @@ public class MeiPlayer extends DiscordSerializable {
 		this.discordId = par3DiscordId;
 	}
 
+	protected MeiPlayer() {
+		this(null, null, null);
+	}
+
 	public UUID getID() {
 		return this.id;
 	}
@@ -42,5 +46,18 @@ public class MeiPlayer extends DiscordSerializable {
 		this.id = UUID.fromString(dis.readUTF());
 		this.name = dis.readUTF();
 		this.discordId = dis.readUTF();
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (other == null) {
+			return false;
+		}
+		if (!(other instanceof MeiPlayer)) {
+			return false;
+		}
+		MeiPlayer player = (MeiPlayer) other;
+		return player.getID().equals(this.id) && player.getName().equals(this.name)
+				&& player.getDiscordID().equals(this.discordId);
 	}
 }
