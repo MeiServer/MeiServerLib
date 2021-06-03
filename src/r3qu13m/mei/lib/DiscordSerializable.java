@@ -17,7 +17,7 @@ public interface DiscordSerializable {
 
 	public void unserialize(DataInputStream dis) throws IOException;
 
-	public static <T extends DiscordSerializable> String serialize(final T obj) {
+	public static <T> String serialize(final T obj) {
 		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
 		final DataOutputStream dos = new DataOutputStream(bos);
 		try {
@@ -25,8 +25,10 @@ public interface DiscordSerializable {
 				final ObjectOutputStream oos = new ObjectOutputStream(dos);
 				oos.writeObject(obj);
 				oos.flush();
+			} else if (DiscordSerializable.class.isAssignableFrom(obj.getClass())) {
+				((DiscordSerializable) obj).serialize(dos);
 			} else {
-				obj.serialize(dos);
+				throw new RuntimeException("The specified object is not serializable");
 			}
 			dos.flush();
 		} catch (final IOException e) {
@@ -35,46 +37,25 @@ public interface DiscordSerializable {
 		return Base64.getEncoder().encodeToString(bos.toByteArray());
 	}
 
-	public static <T extends Serializable> String serialize(final T obj) {
-		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		final DataOutputStream dos = new DataOutputStream(bos);
-		try {
-			final ObjectOutputStream oos = new ObjectOutputStream(dos);
-			oos.writeObject(obj);
-			oos.flush();
-			dos.flush();
-		} catch (final IOException e) {
-			throw new RuntimeException(e);
-		}
-		return Base64.getEncoder().encodeToString(bos.toByteArray());
-	}
-
-	public static <T extends DiscordSerializable> T unserialize(final String encodedData, final Class<T> cls) {
-		final ByteArrayInputStream bis = new ByteArrayInputStream(Base64.getDecoder().decode(encodedData));
-		final DataInputStream dis = new DataInputStream(bis);
-		T obj = null;
-		try {
-			final Constructor<T> constructor = cls.getDeclaredConstructor();
-			constructor.setAccessible(true);
-			obj = constructor.newInstance();
-			obj.unserialize(dis);
-		} catch (InstantiationException | IllegalAccessException | IOException | NoSuchMethodException
-				| SecurityException | IllegalArgumentException | InvocationTargetException e) {
-			throw new RuntimeException(e);
-		}
-		return obj;
-	}
-
 	@SuppressWarnings("unchecked")
-	public static <T extends Serializable> T unserialize(final String encodedData) {
+	public static <T> T unserialize(final String encodedData, final Class<T> cls) {
 		final ByteArrayInputStream bis = new ByteArrayInputStream(Base64.getDecoder().decode(encodedData));
 		final DataInputStream dis = new DataInputStream(bis);
 		T obj = null;
 		try {
-			final ObjectInputStream ois = new ObjectInputStream(dis);
-			obj = (T) ois.readObject();
-
-		} catch (IOException | SecurityException | IllegalArgumentException | ClassNotFoundException e) {
+			if (Serializable.class.isAssignableFrom((Class<?>) cls)) {
+				final ObjectInputStream ois = new ObjectInputStream(dis);
+				obj = (T) ois.readObject();
+			} else if (DiscordSerializable.class.isAssignableFrom(cls)) {
+				final Constructor<T> constructor = cls.getDeclaredConstructor();
+				constructor.setAccessible(true);
+				obj = constructor.newInstance();
+				((DiscordSerializable) obj).unserialize(dis);
+			} else {
+				throw new RuntimeException("The specified object is not unserializable");
+			}
+		} catch (InstantiationException | IllegalAccessException | IOException | NoSuchMethodException
+				| SecurityException | IllegalArgumentException | InvocationTargetException | ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
 		return obj;

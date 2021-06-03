@@ -12,14 +12,14 @@ public class MeiPlayer implements DiscordSerializable {
 	private String name;
 	private String discordId;
 
-	public MeiPlayer(final UUID par1Id, final String par2Name, final String par3DiscordId) {
-		this.id = par1Id;
-		this.name = par2Name;
-		this.discordId = par3DiscordId;
+	public MeiPlayer(final String par1Name, final String par2DiscordId) {
+		this.id = UUID.randomUUID();
+		this.name = par1Name;
+		this.discordId = par2DiscordId;
 	}
 
 	protected MeiPlayer() {
-		this(null, null, null);
+		this(null, null);
 	}
 
 	public UUID getID() {
