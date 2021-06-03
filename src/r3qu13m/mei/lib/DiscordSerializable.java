@@ -17,44 +17,44 @@ public interface DiscordSerializable {
 
 	public void unserialize(DataInputStream dis) throws IOException;
 
-	public static <T extends DiscordSerializable> String serialize(T obj) {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		DataOutputStream dos = new DataOutputStream(bos);
+	public static <T extends DiscordSerializable> String serialize(final T obj) {
+		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		final DataOutputStream dos = new DataOutputStream(bos);
 		try {
 			if (Serializable.class.isAssignableFrom(obj.getClass())) {
-				ObjectOutputStream oos = new ObjectOutputStream(dos);
+				final ObjectOutputStream oos = new ObjectOutputStream(dos);
 				oos.writeObject(obj);
 				oos.flush();
 			} else {
 				obj.serialize(dos);
 			}
 			dos.flush();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new RuntimeException(e);
 		}
 		return Base64.getEncoder().encodeToString(bos.toByteArray());
 	}
 
-	public static <T extends Serializable> String serialize(T obj) {
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		DataOutputStream dos = new DataOutputStream(bos);
+	public static <T extends Serializable> String serialize(final T obj) {
+		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		final DataOutputStream dos = new DataOutputStream(bos);
 		try {
-			ObjectOutputStream oos = new ObjectOutputStream(dos);
+			final ObjectOutputStream oos = new ObjectOutputStream(dos);
 			oos.writeObject(obj);
 			oos.flush();
 			dos.flush();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new RuntimeException(e);
 		}
 		return Base64.getEncoder().encodeToString(bos.toByteArray());
 	}
 
-	public static <T extends DiscordSerializable> T unserialize(String encodedData, Class<T> cls) {
-		ByteArrayInputStream bis = new ByteArrayInputStream(Base64.getDecoder().decode(encodedData));
-		DataInputStream dis = new DataInputStream(bis);
+	public static <T extends DiscordSerializable> T unserialize(final String encodedData, final Class<T> cls) {
+		final ByteArrayInputStream bis = new ByteArrayInputStream(Base64.getDecoder().decode(encodedData));
+		final DataInputStream dis = new DataInputStream(bis);
 		T obj = null;
 		try {
-			Constructor<T> constructor = cls.getDeclaredConstructor();
+			final Constructor<T> constructor = cls.getDeclaredConstructor();
 			constructor.setAccessible(true);
 			obj = constructor.newInstance();
 			obj.unserialize(dis);
@@ -66,12 +66,12 @@ public interface DiscordSerializable {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T extends Serializable> T unserialize(String encodedData) {
-		ByteArrayInputStream bis = new ByteArrayInputStream(Base64.getDecoder().decode(encodedData));
-		DataInputStream dis = new DataInputStream(bis);
+	public static <T extends Serializable> T unserialize(final String encodedData) {
+		final ByteArrayInputStream bis = new ByteArrayInputStream(Base64.getDecoder().decode(encodedData));
+		final DataInputStream dis = new DataInputStream(bis);
 		T obj = null;
 		try {
-			ObjectInputStream ois = new ObjectInputStream(dis);
+			final ObjectInputStream ois = new ObjectInputStream(dis);
 			obj = (T) ois.readObject();
 
 		} catch (IOException | SecurityException | IllegalArgumentException | ClassNotFoundException e) {

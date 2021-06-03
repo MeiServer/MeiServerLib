@@ -9,7 +9,7 @@ public enum DataType {
 
 	private String dir;
 
-	private DataType(String par1Dir) {
+	private DataType(final String par1Dir) {
 		this.dir = par1Dir;
 	}
 

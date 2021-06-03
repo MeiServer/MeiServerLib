@@ -12,7 +12,7 @@ public class MeiPlayer implements DiscordSerializable {
 	private String name;
 	private String discordId;
 
-	public MeiPlayer(UUID par1Id, String par2Name, String par3DiscordId) {
+	public MeiPlayer(final UUID par1Id, final String par2Name, final String par3DiscordId) {
 		this.id = par1Id;
 		this.name = par2Name;
 		this.discordId = par3DiscordId;
@@ -35,28 +35,28 @@ public class MeiPlayer implements DiscordSerializable {
 	}
 
 	@Override
-	public void serialize(DataOutputStream dos) throws IOException {
-		dos.writeUTF(id.toString());
-		dos.writeUTF(name);
-		dos.writeUTF(discordId);
+	public void serialize(final DataOutputStream dos) throws IOException {
+		dos.writeUTF(this.id.toString());
+		dos.writeUTF(this.name);
+		dos.writeUTF(this.discordId);
 	}
 
 	@Override
-	public void unserialize(DataInputStream dis) throws IOException {
+	public void unserialize(final DataInputStream dis) throws IOException {
 		this.id = UUID.fromString(dis.readUTF());
 		this.name = dis.readUTF();
 		this.discordId = dis.readUTF();
 	}
 
 	@Override
-	public boolean equals(Object other) {
+	public boolean equals(final Object other) {
 		if (other == null) {
 			return false;
 		}
 		if (!(other instanceof MeiPlayer)) {
 			return false;
 		}
-		MeiPlayer player = (MeiPlayer) other;
+		final MeiPlayer player = (MeiPlayer) other;
 		return player.getID().equals(this.id) && player.getName().equals(this.name)
 				&& player.getDiscordID().equals(this.discordId);
 	}
