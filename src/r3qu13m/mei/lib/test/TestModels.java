@@ -1,10 +1,6 @@
 package r3qu13m.mei.lib.test;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.util.Base64;
 import java.util.UUID;
 
 import org.junit.Test;
@@ -22,6 +18,9 @@ public class TestModels extends TestCase {
 		TestCase.assertEquals(DataType.MOD.getDestDir(dotMC).get(), new File(dotMC, "mods"));
 		TestCase.assertEquals(DataType.COREMOD.getDestDir(dotMC).get(), new File(dotMC, "coremods"));
 		TestCase.assertFalse(DataType.JAR.getDestDir(dotMC).isPresent());
+
+		TestCase.assertEquals(DiscordSerializable.unserialize(DiscordSerializable.serialize(DataType.CONFIG)),
+				DataType.CONFIG);
 	}
 
 	@Test

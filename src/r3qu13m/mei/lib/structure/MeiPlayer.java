@@ -7,7 +7,7 @@ import java.util.UUID;
 
 import r3qu13m.mei.lib.DiscordSerializable;
 
-public class MeiPlayer extends DiscordSerializable {
+public class MeiPlayer implements DiscordSerializable {
 	private UUID id;
 	private String name;
 	private String discordId;
@@ -35,14 +35,14 @@ public class MeiPlayer extends DiscordSerializable {
 	}
 
 	@Override
-	protected void serialize(DataOutputStream dos) throws IOException {
+	public void serialize(DataOutputStream dos) throws IOException {
 		dos.writeUTF(id.toString());
 		dos.writeUTF(name);
 		dos.writeUTF(discordId);
 	}
 
 	@Override
-	protected void unserialize(DataInputStream dis) throws IOException {
+	public void unserialize(DataInputStream dis) throws IOException {
 		this.id = UUID.fromString(dis.readUTF());
 		this.name = dis.readUTF();
 		this.discordId = dis.readUTF();
@@ -59,5 +59,10 @@ public class MeiPlayer extends DiscordSerializable {
 		MeiPlayer player = (MeiPlayer) other;
 		return player.getID().equals(this.id) && player.getName().equals(this.name)
 				&& player.getDiscordID().equals(this.discordId);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.id.hashCode();
 	}
 }
