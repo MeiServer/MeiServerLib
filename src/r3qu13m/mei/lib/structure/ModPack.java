@@ -4,9 +4,11 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import r3qu13m.mei.lib.DiscordSerializable;
 import r3qu13m.mei.lib.MeiServerLib;
@@ -30,6 +32,10 @@ public class ModPack implements DiscordSerializable {
 
 	public List<Mod> getMods() {
 		return Collections.unmodifiableList(this.mods);
+	}
+
+	public List<DistributeFile> getFiles() {
+		return this.getMods().stream().map(Mod::getFiles).flatMap(Collection::stream).collect(Collectors.toList());
 	}
 
 	public int getVersion() {

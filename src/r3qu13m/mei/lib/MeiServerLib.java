@@ -5,6 +5,7 @@ import java.util.function.Function;
 
 import r3qu13m.mei.lib.structure.DistributeFile;
 import r3qu13m.mei.lib.structure.Mod;
+import r3qu13m.mei.lib.structure.ModPack;
 
 public final class MeiServerLib {
 	private static MeiServerLib _instance;
@@ -18,6 +19,7 @@ public final class MeiServerLib {
 
 	private Function<UUID, DistributeFile> dfMap;
 	private Function<UUID, Mod> modMap;
+	private Function<UUID, ModPack> mpMap;
 
 	private MeiServerLib() {
 
@@ -45,5 +47,17 @@ public final class MeiServerLib {
 
 	synchronized public void setModMap(final Function<UUID, Mod> func) {
 		this.modMap = func;
+	}
+
+	synchronized public ModPack getModPack(final UUID id) {
+		if (this.mpMap == null) {
+			throw new RuntimeException("mpMap must not null");
+		}
+
+		return this.mpMap.apply(id);
+	}
+
+	synchronized public void setModPackMap(final Function<UUID, ModPack> func) {
+		this.mpMap = func;
 	}
 }
