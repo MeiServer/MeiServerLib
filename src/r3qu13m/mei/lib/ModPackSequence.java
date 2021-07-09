@@ -3,9 +3,8 @@ package r3qu13m.mei.lib;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.Deque;
 import java.util.LinkedList;
-import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 
 import r3qu13m.mei.lib.structure.ModPack;
@@ -24,20 +23,39 @@ public class ModPackSequence implements DiscordSerializable {
 		return ModPackSequence._instance;
 	}
 
-	private Deque<ModPack> seq;
-	private Deque<MPVec> vecSeq;
+	private List<ModPack> seq;
 
 	public void add(final ModPack pack) {
 		this.seq.add(pack);
 	}
 
-	@Override
-	public void serialize(DataOutputStream dos) throws IOException {
-
+	public MPVec getDifference(final ModPack fromPack, final ModPack toPack) {
+		if (!this.seq.contains(fromPack) || !this.seq.contains(toPack)) {
+			throw new RuntimeException("ModPack Sequence doesn't contains the specified ModPack");
+		}
+		final int s = this.seq.indexOf(fromPack);
+		final int e = this.seq.indexOf(toPack);
+		MPVec vec = new MPVec(this.seq.get(s));
+		for (int i = s; i < e + 1; i++) {
+			vec = vec.composite(new MPVec(this.seq.get(i)));
+		}
+		return vec;
 	}
 
 	@Override
-	public void unserialize(DataInputStream dis) throws IOException {
+	public void serialize(final DataOutputStream dos) throws IOException {
+		dos.writeInt(this.seq.size());
+		for (final ModPack pack : this.seq) {
+			dos.writeUTF(pack.getID().toString());
+		}
+	}
 
+	@Override
+	public void unserialize(final DataInputStream dis) throws IOException {
+		final int size = dis.readInt();
+		this.seq = new LinkedList<>();
+		for (int i = 0; i < size; i++) {
+			this.seq.add(MeiServerLib.instance().getModPack(UUID.fromString(dis.readUTF())));
+		}
 	}
 }
