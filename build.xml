@@ -11,9 +11,11 @@
 	<pathconvert property="lib.classpath">
 		<path>
 			<fileset id="lib.classpath.set" dir="${libdir}">
-				<include name="JDA-4.2.1_253-withDependencies.jar" />
 				<include name="snakeyaml-1.28.jar" />
 				<include name="junit-4.12.jar" />
+				<include name="commons-codec-1.15.jar" />
+				<include name="scribejava-core-8.3.1.jar" />
+				<include name="scribejava-apis-8.3.1.jar" />
 			</fileset>
 		</path>
 	</pathconvert>
