@@ -59,9 +59,9 @@ public class MPVec {
 	}
 
 	public Map<UUID, OperationType> getDifference() {
-		Map<UUID, OperationType> ret = new HashMap<>();
-		for (UUID key : packDiff.keySet()) {
-			OperationType val = packDiff.get(key);
+		final Map<UUID, OperationType> ret = new HashMap<>();
+		for (final UUID key : this.packDiff.keySet()) {
+			final OperationType val = this.packDiff.get(key);
 			if (val != OperationType.IDENTITY) {
 				ret.put(key, val);
 			}

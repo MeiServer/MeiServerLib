@@ -33,23 +33,23 @@ public class DiscordStoredData implements DiscordSerializable {
 		this.players = new HashSet<>();
 	}
 
-	public void setModPackSequence(ModPackSequence obj) {
+	public void setModPackSequence(final ModPackSequence obj) {
 		this.mpSeq = obj;
 	}
 
-	public void setModPacks(Set<ModPack> set) {
+	public void setModPacks(final Set<ModPack> set) {
 		this.modPacks = set;
 	}
 
-	public void setMods(Set<Mod> set) {
+	public void setMods(final Set<Mod> set) {
 		this.mods = set;
 	}
 
-	public void setFiles(Set<DistributeFile> set) {
+	public void setFiles(final Set<DistributeFile> set) {
 		this.files = set;
 	}
 
-	public void setPlayers(Set<MeiPlayer> set) {
+	public void setPlayers(final Set<MeiPlayer> set) {
 		this.players = set;
 	}
 
@@ -73,32 +73,32 @@ public class DiscordStoredData implements DiscordSerializable {
 		return this.players;
 	}
 
-	private <T> Map<UUID, T> genCorrespondingMap(Set<T> set, Function<T, UUID> uuid) {
-		Map<UUID, T> ret = new HashMap<>();
-		for (T value : set) {
+	private <T> Map<UUID, T> genCorrespondingMap(final Set<T> set, final Function<T, UUID> uuid) {
+		final Map<UUID, T> ret = new HashMap<>();
+		for (final T value : set) {
 			ret.put(uuid.apply(value), value);
 		}
 		return ret;
 	}
 
-	private <T extends DiscordSerializable> Set<T> readSet(DataInputStream dis, Class<T> clazz) throws IOException {
-		int size = dis.readInt();
-		Set<T> ret = new HashSet<>();
+	private <T extends DiscordSerializable> Set<T> readSet(final DataInputStream dis, final Class<T> clazz) throws IOException {
+		final int size = dis.readInt();
+		final Set<T> ret = new HashSet<>();
 		for (int i = 0; i < size; i++) {
 			ret.add(DiscordSerializable.unserialize(dis, clazz));
 		}
 		return ret;
 	}
 
-	private <T extends DiscordSerializable> void writeSet(DataOutputStream dos, Set<T> set) throws IOException {
+	private <T extends DiscordSerializable> void writeSet(final DataOutputStream dos, final Set<T> set) throws IOException {
 		dos.writeInt(set.size());
-		for (T value : set) {
+		for (final T value : set) {
 			value.serialize(dos);
 		}
 	}
 
 	@Override
-	public void serialize(DataOutputStream dos) throws IOException {
+	public void serialize(final DataOutputStream dos) throws IOException {
 		this.writeSet(dos, this.getPlayers());
 		this.writeSet(dos, this.getFiles());
 		this.writeSet(dos, this.getMods());
@@ -110,15 +110,15 @@ public class DiscordStoredData implements DiscordSerializable {
 	}
 
 	@Override
-	public void unserialize(DataInputStream dis) throws IOException {
+	public void unserialize(final DataInputStream dis) throws IOException {
 		this.init();
-		this.setPlayers(readSet(dis, MeiPlayer.class));
-		this.setFiles(readSet(dis, DistributeFile.class));
+		this.setPlayers(this.readSet(dis, MeiPlayer.class));
+		this.setFiles(this.readSet(dis, DistributeFile.class));
 		MeiServerLib.instance()
 				.setDistributeFileMap(this.genCorrespondingMap(this.getFiles(), DistributeFile::getID)::get);
-		this.setMods(readSet(dis, Mod.class));
+		this.setMods(this.readSet(dis, Mod.class));
 		MeiServerLib.instance().setModMap(this.genCorrespondingMap(this.getMods(), Mod::getID)::get);
-		this.setModPacks(readSet(dis, ModPack.class));
+		this.setModPacks(this.readSet(dis, ModPack.class));
 		MeiServerLib.instance().setModPackMap(this.genCorrespondingMap(this.getModPacks(), ModPack::getID)::get);
 		if (dis.readBoolean()) {
 			this.setModPackSequence(DiscordSerializable.unserialize(dis, ModPackSequence.class));

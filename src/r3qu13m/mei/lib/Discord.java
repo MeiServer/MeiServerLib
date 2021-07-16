@@ -17,26 +17,26 @@ public class Discord {
 	private static String CLIENT_ID = "862898876662677514";
 	private static String CLIENT_SECRET = "UEh3o-i17k1W8VAbg84QHP5EJccR2g69";
 
-	private OAuth20Service service;
+	private final OAuth20Service service;
 	private OAuth2AccessToken token;
 
 	public Discord() {
-		this.service = new ServiceBuilder(CLIENT_ID).apiSecret(CLIENT_SECRET)
+		this.service = new ServiceBuilder(Discord.CLIENT_ID).apiSecret(Discord.CLIENT_SECRET)
 				.defaultScope("identify messages.read guilds").callback("http://example.com/callback")
 				.userAgent("MeiServerLib").build(DiscordApi.instance());
 		this.token = null;
 	}
-	
-	public Discord(OAuth2AccessToken token) {
+
+	public Discord(final OAuth2AccessToken token) {
 		this();
 		this.setAccessToken(token);
 	}
 
 	public String getAuthorizationURL() {
-		return service.getAuthorizationUrl();
+		return this.service.getAuthorizationUrl();
 	}
 
-	public void authorize(String authorizationCode) {
+	public void authorize(final String authorizationCode) {
 		try {
 			this.setAccessToken(this.service.getAccessToken(authorizationCode));
 		} catch (IOException | InterruptedException | ExecutionException e) {
@@ -44,7 +44,7 @@ public class Discord {
 		}
 	}
 
-	public void setAccessToken(OAuth2AccessToken token) {
+	public void setAccessToken(final OAuth2AccessToken token) {
 		try {
 			this.token = this.service.refreshAccessToken(token.getRefreshToken());
 		} catch (IOException | InterruptedException | ExecutionException e) {
@@ -56,8 +56,8 @@ public class Discord {
 		return this.token != null;
 	}
 
-	public Response get(String path) {
-		OAuthRequest req = new OAuthRequest(Verb.GET, path);
+	public Response get(final String path) {
+		final OAuthRequest req = new OAuthRequest(Verb.GET, path);
 
 		this.service.signRequest(this.token, req);
 
@@ -68,9 +68,9 @@ public class Discord {
 		}
 	}
 
-	public Response post(String path, Map<String, String> params) {
-		OAuthRequest req = new OAuthRequest(Verb.POST, path);
-		for (Entry<String, String> pair : params.entrySet()) {
+	public Response post(final String path, final Map<String, String> params) {
+		final OAuthRequest req = new OAuthRequest(Verb.POST, path);
+		for (final Entry<String, String> pair : params.entrySet()) {
 			req.addBodyParameter(pair.getKey(), pair.getValue());
 		}
 

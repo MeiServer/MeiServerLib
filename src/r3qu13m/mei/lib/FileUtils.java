@@ -12,7 +12,7 @@ public class FileUtils {
 	public static String computeHash(final File target) {
 		try {
 			return FileUtils.computeHash(new FileInputStream(target));
-		} catch (FileNotFoundException e) {
+		} catch (final FileNotFoundException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -20,7 +20,7 @@ public class FileUtils {
 	public static String computeHash(final InputStream is) {
 		try {
 			return DigestUtils.sha1Hex(is);
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			throw new RuntimeException(e);
 		}
 	}
