@@ -1,4 +1,4 @@
-package r3qu13m.mei.lib;
+package r3qu13m.mei.lib.structure;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -7,7 +7,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import r3qu13m.mei.lib.structure.ModPack;
+import r3qu13m.mei.lib.DiscordSerializable;
+import r3qu13m.mei.lib.MPVec;
+import r3qu13m.mei.lib.MeiServerLib;
 
 public class ModPackSequence implements DiscordSerializable {
 	private ModPackSequence() {

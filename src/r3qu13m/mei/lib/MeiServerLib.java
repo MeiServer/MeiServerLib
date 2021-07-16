@@ -6,11 +6,12 @@ import java.util.function.Function;
 import r3qu13m.mei.lib.structure.DistributeFile;
 import r3qu13m.mei.lib.structure.Mod;
 import r3qu13m.mei.lib.structure.ModPack;
+import r3qu13m.mei.lib.structure.ModPackSequence;
 
 public final class MeiServerLib {
 	private static MeiServerLib _instance;
 
-	public static MeiServerLib instance() {
+	public synchronized static MeiServerLib instance() {
 		if (MeiServerLib._instance == null) {
 			MeiServerLib._instance = new MeiServerLib();
 		}
@@ -20,12 +21,13 @@ public final class MeiServerLib {
 	private Function<UUID, DistributeFile> dfMap;
 	private Function<UUID, Mod> modMap;
 	private Function<UUID, ModPack> mpMap;
+	private ModPackSequence mpSeq;
 
 	private MeiServerLib() {
 
 	}
 
-	synchronized public DistributeFile getDistributeFile(final UUID id) {
+	public DistributeFile getDistributeFile(final UUID id) {
 		if (this.dfMap == null) {
 			throw new RuntimeException("dfMap must not null");
 		}
@@ -33,11 +35,11 @@ public final class MeiServerLib {
 		return this.dfMap.apply(id);
 	}
 
-	synchronized public void setDistributeFileMap(final Function<UUID, DistributeFile> func) {
+	public void setDistributeFileMap(final Function<UUID, DistributeFile> func) {
 		this.dfMap = func;
 	}
 
-	synchronized public Mod getMod(final UUID id) {
+	public Mod getMod(final UUID id) {
 		if (this.modMap == null) {
 			throw new RuntimeException("modMap must not null");
 		}
@@ -45,11 +47,11 @@ public final class MeiServerLib {
 		return this.modMap.apply(id);
 	}
 
-	synchronized public void setModMap(final Function<UUID, Mod> func) {
+	public void setModMap(final Function<UUID, Mod> func) {
 		this.modMap = func;
 	}
 
-	synchronized public ModPack getModPack(final UUID id) {
+	public ModPack getModPack(final UUID id) {
 		if (this.mpMap == null) {
 			throw new RuntimeException("mpMap must not null");
 		}
@@ -57,7 +59,19 @@ public final class MeiServerLib {
 		return this.mpMap.apply(id);
 	}
 
-	synchronized public void setModPackMap(final Function<UUID, ModPack> func) {
+	public void setModPackMap(final Function<UUID, ModPack> func) {
 		this.mpMap = func;
+	}
+
+	public ModPackSequence getModPackSequence() {
+		if (this.mpSeq == null) {
+			throw new RuntimeException("mpSeq must not null");
+		}
+
+		return this.mpSeq;
+	}
+
+	public void setModPackSequence(final ModPackSequence newSeq) {
+		this.mpSeq = newSeq;
 	}
 }

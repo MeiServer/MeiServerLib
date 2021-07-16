@@ -1,4 +1,4 @@
-package r3qu13m.mei.lib.structure;
+package r3qu13m.mei.lib;
 
 import java.io.File;
 import java.util.Optional;

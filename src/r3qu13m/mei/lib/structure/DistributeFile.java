@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.UUID;
 
+import r3qu13m.mei.lib.DataType;
 import r3qu13m.mei.lib.DiscordSerializable;
 
 public class DistributeFile implements DiscordSerializable {

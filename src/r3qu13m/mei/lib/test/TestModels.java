@@ -11,9 +11,9 @@ import java.util.UUID;
 import org.junit.Test;
 
 import junit.framework.TestCase;
+import r3qu13m.mei.lib.DataType;
 import r3qu13m.mei.lib.DiscordSerializable;
 import r3qu13m.mei.lib.MeiServerLib;
-import r3qu13m.mei.lib.structure.DataType;
 import r3qu13m.mei.lib.structure.DistributeFile;
 import r3qu13m.mei.lib.structure.MeiPlayer;
 import r3qu13m.mei.lib.structure.Mod;
