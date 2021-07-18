@@ -26,6 +26,10 @@ public class ModPack implements DiscordSerializable {
 		this.mods.addAll(par1Mods);
 	}
 
+	protected ModPack() {
+		this(new ArrayList<>(), 0);
+	}
+
 	public UUID getID() {
 		return this.id;
 	}

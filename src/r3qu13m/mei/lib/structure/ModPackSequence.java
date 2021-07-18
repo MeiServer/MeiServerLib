@@ -13,17 +13,8 @@ import r3qu13m.mei.lib.MPVec;
 import r3qu13m.mei.lib.MeiServerLib;
 
 public class ModPackSequence implements DiscordSerializable {
-	private ModPackSequence() {
+	ModPackSequence() {
 		this.seq = new LinkedList<>();
-	}
-
-	private static ModPackSequence _instance;
-
-	public static ModPackSequence instance() {
-		if (ModPackSequence._instance == null) {
-			ModPackSequence._instance = new ModPackSequence();
-		}
-		return ModPackSequence._instance;
 	}
 
 	private List<ModPack> seq;

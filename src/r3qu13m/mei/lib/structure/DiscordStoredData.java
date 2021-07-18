@@ -27,7 +27,7 @@ public class DiscordStoredData implements DiscordSerializable {
 	}
 
 	private void init() {
-		this.mpSeq = null;
+		this.mpSeq = new ModPackSequence();
 		this.modPacks = new HashSet<>();
 		this.mods = new HashSet<>();
 		this.files = new HashSet<>();
@@ -54,8 +54,8 @@ public class DiscordStoredData implements DiscordSerializable {
 		this.players = set;
 	}
 
-	public Optional<ModPackSequence> getModPackSequence() {
-		return Optional.ofNullable(this.mpSeq);
+	public ModPackSequence getModPackSequence() {
+		return this.mpSeq;
 	}
 
 	public Set<ModPack> getModPacks() {
@@ -82,7 +82,8 @@ public class DiscordStoredData implements DiscordSerializable {
 		return ret;
 	}
 
-	private <T extends DiscordSerializable> Set<T> readSet(final DataInputStream dis, final Class<T> clazz) throws IOException {
+	private <T extends DiscordSerializable> Set<T> readSet(final DataInputStream dis, final Class<T> clazz)
+			throws IOException {
 		final int size = dis.readInt();
 		final Set<T> ret = new HashSet<>();
 		for (int i = 0; i < size; i++) {
@@ -91,7 +92,8 @@ public class DiscordStoredData implements DiscordSerializable {
 		return ret;
 	}
 
-	private <T extends DiscordSerializable> void writeSet(final DataOutputStream dos, final Set<T> set) throws IOException {
+	private <T extends DiscordSerializable> void writeSet(final DataOutputStream dos, final Set<T> set)
+			throws IOException {
 		dos.writeInt(set.size());
 		for (final T value : set) {
 			value.serialize(dos);
@@ -104,10 +106,7 @@ public class DiscordStoredData implements DiscordSerializable {
 		this.writeSet(dos, this.getFiles());
 		this.writeSet(dos, this.getMods());
 		this.writeSet(dos, this.getModPacks());
-		dos.writeBoolean(this.mpSeq != null);
-		if (this.mpSeq != null) {
-			this.mpSeq.serialize(dos);
-		}
+		this.mpSeq.serialize(dos);
 	}
 
 	@Override
@@ -121,9 +120,7 @@ public class DiscordStoredData implements DiscordSerializable {
 		MeiServerLib.instance().setModMap(this.genCorrespondingMap(this.getMods(), Mod::getID)::get);
 		this.setModPacks(this.readSet(dis, ModPack.class));
 		MeiServerLib.instance().setModPackMap(this.genCorrespondingMap(this.getModPacks(), ModPack::getID)::get);
-		if (dis.readBoolean()) {
-			this.setModPackSequence(DiscordSerializable.unserialize(dis, ModPackSequence.class));
-		}
+		this.setModPackSequence(DiscordSerializable.unserialize(dis, ModPackSequence.class));
 	}
 
 }
