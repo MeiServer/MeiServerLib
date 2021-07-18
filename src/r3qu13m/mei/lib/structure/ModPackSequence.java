@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import r3qu13m.mei.lib.DiscordSerializable;
@@ -29,6 +30,13 @@ public class ModPackSequence implements DiscordSerializable {
 
 	public void add(final ModPack pack) {
 		this.seq.add(pack);
+	}
+
+	public Optional<ModPack> getLatestPack() {
+		if (this.seq.isEmpty()) {
+			return Optional.empty();
+		}
+		return Optional.ofNullable(this.seq.get(this.seq.size() - 1));
 	}
 
 	public MPVec getDifference(final ModPack fromPack, final ModPack toPack) {

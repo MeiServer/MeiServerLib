@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
@@ -53,8 +54,8 @@ public class DiscordStoredData implements DiscordSerializable {
 		this.players = set;
 	}
 
-	public ModPackSequence getModPackSequence() {
-		return this.mpSeq;
+	public Optional<ModPackSequence> getModPackSequence() {
+		return Optional.ofNullable(this.mpSeq);
 	}
 
 	public Set<ModPack> getModPacks() {
