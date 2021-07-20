@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 
 import com.github.scribejava.apis.DiscordApi;
+import com.github.scribejava.core.builder.ScopeBuilder;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuthRequest;
@@ -22,14 +23,9 @@ public class Discord {
 
 	public Discord() {
 		this.service = new ServiceBuilder(Discord.CLIENT_ID).apiSecret(Discord.CLIENT_SECRET)
-				.defaultScope("identify messages.read guilds").callback("http://example.com/callback")
-				.userAgent("MeiServerLib").build(DiscordApi.instance());
+				.defaultScope(new ScopeBuilder("identify", "messages.read", "applications.builds.read"))
+				.callback("http://example.com/callback").userAgent("MeiServerLib").build(DiscordApi.instance());
 		this.token = null;
-	}
-
-	public Discord(final OAuth2AccessToken token) {
-		this();
-		this.setAccessToken(token);
 	}
 
 	public String getAuthorizationURL() {
@@ -38,48 +34,67 @@ public class Discord {
 
 	public void authorize(final String authorizationCode) {
 		try {
-			this.setAccessToken(this.service.getAccessToken(authorizationCode));
+			this.setRefreshToken(this.service.getAccessToken(authorizationCode).getRefreshToken());
 		} catch (IOException | InterruptedException | ExecutionException e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public void setAccessToken(final OAuth2AccessToken token) {
+	public void setRefreshToken(final String refreshToken) {
 		try {
-			this.token = this.service.refreshAccessToken(token.getRefreshToken());
+			this.token = this.service.refreshAccessToken(refreshToken);
 		} catch (IOException | InterruptedException | ExecutionException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public String getAccessToken() {
+		return this.token.getAccessToken();
+	}
+
+	public String getRefreshToken() {
+		return this.token.getRefreshToken();
 	}
 
 	public boolean hasValidAccessToken() {
-		return this.token != null;
-	}
-
-	public Response get(final String path) {
-		final OAuthRequest req = new OAuthRequest(Verb.GET, path);
-
-		this.service.signRequest(this.token, req);
-
+		if (this.token == null) {
+			return false;
+		}
 		try {
-			return this.service.execute(req);
+			Response res = this.get("/users/@me");
+			return res.getCode() == 200;
 		} catch (InterruptedException | ExecutionException | IOException e) {
-			throw new RuntimeException(e);
+			return false;
 		}
 	}
 
-	public Response post(final String path, final Map<String, String> params) {
-		final OAuthRequest req = new OAuthRequest(Verb.POST, path);
+	public Response get(final String path) throws InterruptedException, ExecutionException, IOException {
+		final OAuthRequest req = new OAuthRequest(Verb.GET, "https://discordapp.com/api/v9" + path);
+
+		this.service.signRequest(this.token, req);
+		
+		System.err.println(req.getHeaders());
+
+		return this.service.execute(req);
+	}
+
+	public Response post(final String path, final Map<String, String> params)
+			throws InterruptedException, ExecutionException, IOException {
+		final OAuthRequest req = new OAuthRequest(Verb.POST, "https://discordapp.com/api/v9" + path);
 		for (final Entry<String, String> pair : params.entrySet()) {
 			req.addBodyParameter(pair.getKey(), pair.getValue());
 		}
 
 		this.service.signRequest(this.token, req);
 
-		try {
-			return this.service.execute(req);
-		} catch (InterruptedException | ExecutionException | IOException e) {
-			throw new RuntimeException(e);
-		}
+		return this.service.execute(req);
+	}
+
+	public void clearToken() {
+		this.token = null;
+	}
+
+	public void setAuthToken(String string) {
+		
 	}
 }
