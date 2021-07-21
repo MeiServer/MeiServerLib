@@ -31,9 +31,7 @@ import argo.saj.InvalidSyntaxException;
 public class Discord {
 	private static String CLIENT_ID = "862898876662677514";
 	private static String CLIENT_SECRET = "UEh3o-i17k1W8VAbg84QHP5EJccR2g69";
-	// private static String READ_BOT_TOKEN =
-	// "ODY3Mjc5ODEwNjk5MDY3NDEy.YPezRA.kIgVKDTSTOIGwP6R9eCfG0_3Qlw";
-	private static String READ_BOT_TOKEN = "ODYyODk4ODc2NjYyNjc3NTE0.YOfDNA.0AT1PLw59ddmYOzbPqZHdVJvFnA";
+	private static String READ_BOT_TOKEN = "ODY3Mjc5ODEwNjk5MDY3NDEy.YPezRA.zM9ECZg0xsJQ9vwqZho8wXW5RdM";
 
 	private final OAuth20Service service;
 	private OAuth2AccessToken token;
@@ -94,12 +92,14 @@ public class Discord {
 	}
 
 	public JsonRootNode getUsingBotToken(final String path) throws IOException, InvalidSyntaxException {
-		HttpURLConnection con = (HttpURLConnection) new URL("http://localhost:8123/api/v9" + path).openConnection();
-		con.addRequestProperty("Authorization", "Bot ODY3Mjc5ODEwNjk5MDY3NDEy.YPezRA.kIgVKDTSTOIGwP6R9eCfG0_3Qlw");
-		con.setRequestMethod("GET");
+		HttpURLConnection con = (HttpURLConnection) new URL("https://discordapp.com/api/v9" + path).openConnection();
+		con.addRequestProperty("Authorization", "Bot " + READ_BOT_TOKEN);
+		con.setRequestProperty("Content-Type", "application/json");
 		con.connect();
 
-		System.err.println(con.getResponseCode());
+		if (con.getResponseCode() != 200) {
+			return null;
+		}
 
 		InputStream is = con.getInputStream();
 		BufferedReader br = new BufferedReader(new InputStreamReader(is));
