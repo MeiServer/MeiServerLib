@@ -1,6 +1,15 @@
 package r3qu13m.mei.lib;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
@@ -14,17 +23,25 @@ import com.github.scribejava.core.model.Response;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
 
+import argo.jdom.JdomParser;
+import argo.jdom.JsonNode;
+import argo.jdom.JsonRootNode;
+import argo.saj.InvalidSyntaxException;
+
 public class Discord {
 	private static String CLIENT_ID = "862898876662677514";
 	private static String CLIENT_SECRET = "UEh3o-i17k1W8VAbg84QHP5EJccR2g69";
+	// private static String READ_BOT_TOKEN =
+	// "ODY3Mjc5ODEwNjk5MDY3NDEy.YPezRA.kIgVKDTSTOIGwP6R9eCfG0_3Qlw";
+	private static String READ_BOT_TOKEN = "ODYyODk4ODc2NjYyNjc3NTE0.YOfDNA.0AT1PLw59ddmYOzbPqZHdVJvFnA";
 
 	private final OAuth20Service service;
 	private OAuth2AccessToken token;
 
 	public Discord() {
 		this.service = new ServiceBuilder(Discord.CLIENT_ID).apiSecret(Discord.CLIENT_SECRET)
-				.defaultScope(new ScopeBuilder("identify", "messages.read", "applications.builds.read"))
-				.callback("http://example.com/callback").userAgent("MeiServerLib").build(DiscordApi.instance());
+				.defaultScope(new ScopeBuilder("identify")).callback("http://example.com/callback")
+				.userAgent("MeiServerLib").build(DiscordApi.instance());
 		this.token = null;
 	}
 
@@ -72,29 +89,28 @@ public class Discord {
 		final OAuthRequest req = new OAuthRequest(Verb.GET, "https://discordapp.com/api/v9" + path);
 
 		this.service.signRequest(this.token, req);
-		
-		System.err.println(req.getHeaders());
 
 		return this.service.execute(req);
 	}
 
-	public Response post(final String path, final Map<String, String> params)
-			throws InterruptedException, ExecutionException, IOException {
-		final OAuthRequest req = new OAuthRequest(Verb.POST, "https://discordapp.com/api/v9" + path);
-		for (final Entry<String, String> pair : params.entrySet()) {
-			req.addBodyParameter(pair.getKey(), pair.getValue());
-		}
+	public JsonRootNode getUsingBotToken(final String path) throws IOException, InvalidSyntaxException {
+		HttpURLConnection con = (HttpURLConnection) new URL("http://localhost:8123/api/v9" + path).openConnection();
+		con.addRequestProperty("Authorization", "Bot ODY3Mjc5ODEwNjk5MDY3NDEy.YPezRA.kIgVKDTSTOIGwP6R9eCfG0_3Qlw");
+		con.setRequestMethod("GET");
+		con.connect();
 
-		this.service.signRequest(this.token, req);
+		System.err.println(con.getResponseCode());
 
-		return this.service.execute(req);
+		InputStream is = con.getInputStream();
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+
+		JsonRootNode node = new JdomParser().parse(br);
+		br.close();
+
+		return node;
 	}
 
 	public void clearToken() {
 		this.token = null;
-	}
-
-	public void setAuthToken(String string) {
-		
 	}
 }
