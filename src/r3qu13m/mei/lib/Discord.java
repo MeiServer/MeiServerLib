@@ -91,10 +91,12 @@ public class Discord {
 		return this.service.execute(req);
 	}
 
-	public JsonRootNode getUsingBotToken(final String path) throws IOException, InvalidSyntaxException {
+	public String getUsingBotToken(final String path) throws IOException, InvalidSyntaxException {
 		HttpURLConnection con = (HttpURLConnection) new URL("https://discordapp.com/api/v9" + path).openConnection();
 		con.addRequestProperty("Authorization", "Bot " + READ_BOT_TOKEN);
+		con.setRequestProperty("User-Agent", "MeiServerLauncher (https://example.com/callback, 1.0)");
 		con.setRequestProperty("Content-Type", "application/json");
+		// con.setRequestMethod("GET");
 		con.connect();
 
 		if (con.getResponseCode() != 200) {
@@ -103,11 +105,14 @@ public class Discord {
 
 		InputStream is = con.getInputStream();
 		BufferedReader br = new BufferedReader(new InputStreamReader(is));
-
-		JsonRootNode node = new JdomParser().parse(br);
+		StringBuilder sb = new StringBuilder();
+		while (br.ready()) {
+			sb.append(br.readLine());
+		}
+		
 		br.close();
 
-		return node;
+		return sb.toString();
 	}
 
 	public void clearToken() {
