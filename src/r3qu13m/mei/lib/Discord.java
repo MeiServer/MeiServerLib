@@ -20,7 +20,6 @@ import com.github.scribejava.core.oauth.OAuth20Service;
 public class Discord {
 	private static String CLIENT_ID = "862898876662677514";
 	private static String CLIENT_SECRET = "UEh3o-i17k1W8VAbg84QHP5EJccR2g69";
-	private static String READ_BOT_TOKEN = "ODY3Mjc5ODEwNjk5MDY3NDEy.YPezRA.zM9ECZg0xsJQ9vwqZho8wXW5RdM";
 
 	private final OAuth20Service service;
 	private OAuth2AccessToken token;
@@ -80,9 +79,9 @@ public class Discord {
 		return this.service.execute(req);
 	}
 
-	public String getUsingBotToken(final String path) throws IOException {
+	public String getUsingToken(final String path, String token) throws IOException {
 		HttpURLConnection con = (HttpURLConnection) new URL("https://discordapp.com/api/v9" + path).openConnection();
-		con.addRequestProperty("Authorization", "Bot " + READ_BOT_TOKEN);
+		con.addRequestProperty("Authorization", token);
 		con.setRequestProperty("User-Agent", "MeiServerLauncher (https://example.com/callback, 1.0)");
 		con.setRequestProperty("Content-Type", "application/json");
 		// con.setRequestMethod("GET");
@@ -98,7 +97,7 @@ public class Discord {
 		while (br.ready()) {
 			sb.append(br.readLine());
 		}
-		
+
 		br.close();
 
 		return sb.toString();
