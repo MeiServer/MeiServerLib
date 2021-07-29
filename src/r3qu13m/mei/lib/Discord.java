@@ -1,17 +1,11 @@
 package r3qu13m.mei.lib;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ExecutionException;
 
 import com.github.scribejava.apis.DiscordApi;
@@ -22,11 +16,6 @@ import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.Response;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
-
-import argo.jdom.JdomParser;
-import argo.jdom.JsonNode;
-import argo.jdom.JsonRootNode;
-import argo.saj.InvalidSyntaxException;
 
 public class Discord {
 	private static String CLIENT_ID = "862898876662677514";
@@ -91,7 +80,7 @@ public class Discord {
 		return this.service.execute(req);
 	}
 
-	public String getUsingBotToken(final String path) throws IOException, InvalidSyntaxException {
+	public String getUsingBotToken(final String path) throws IOException {
 		HttpURLConnection con = (HttpURLConnection) new URL("https://discordapp.com/api/v9" + path).openConnection();
 		con.addRequestProperty("Authorization", "Bot " + READ_BOT_TOKEN);
 		con.setRequestProperty("User-Agent", "MeiServerLauncher (https://example.com/callback, 1.0)");
