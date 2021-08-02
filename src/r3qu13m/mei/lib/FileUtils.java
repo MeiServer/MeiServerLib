@@ -1,10 +1,15 @@
 package r3qu13m.mei.lib;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -23,5 +28,25 @@ public class FileUtils {
 		} catch (final IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public static void downloadFile(final URL url, final File destination) throws IOException {
+		URLConnection conn = url.openConnection();
+		conn.setRequestProperty("User-Agent", "MeiServerLauncher (https://example.com/callback, 1.0)");
+		conn.connect();
+
+		InputStream is = new BufferedInputStream(conn.getInputStream());
+		OutputStream os = new FileOutputStream(destination);
+		byte buf[] = new byte[1024];
+		while (true) {
+			int readCount = is.read(buf, 0, 1024);
+			if (readCount == -1) {
+				break;
+			}
+			os.write(buf, 0, readCount);
+		}
+		os.flush();
+		is.close();
+		os.close();
 	}
 }
