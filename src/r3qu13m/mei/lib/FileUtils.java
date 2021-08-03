@@ -31,15 +31,15 @@ public class FileUtils {
 	}
 
 	public static void downloadFile(final URL url, final File destination) throws IOException {
-		URLConnection conn = url.openConnection();
+		final URLConnection conn = url.openConnection();
 		conn.setRequestProperty("User-Agent", "MeiServerLauncher (https://example.com/callback, 1.0)");
 		conn.connect();
 
-		InputStream is = new BufferedInputStream(conn.getInputStream());
-		OutputStream os = new FileOutputStream(destination);
-		byte buf[] = new byte[1024];
+		final InputStream is = new BufferedInputStream(conn.getInputStream());
+		final OutputStream os = new FileOutputStream(destination);
+		final byte buf[] = new byte[1024];
 		while (true) {
-			int readCount = is.read(buf, 0, 1024);
+			final int readCount = is.read(buf, 0, 1024);
 			if (readCount == -1) {
 				break;
 			}
