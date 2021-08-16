@@ -2,7 +2,6 @@ package r3qu13m.mei.lib.structure;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -86,7 +85,7 @@ public class DistributeFile implements DiscordSerializable {
 	}
 
 	@Override
-	public void unserialize(final DataInputStream dis) throws IOException {
+	public void unserialize(final DataInputStream dis, final int version) throws IOException {
 		this.id = UUID.fromString(dis.readUTF());
 		this.type = DataType.values()[dis.readInt()];
 		this.name = dis.readUTF();

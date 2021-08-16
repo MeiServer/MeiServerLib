@@ -101,7 +101,7 @@ public class ModPack implements DiscordSerializable {
 	}
 
 	@Override
-	public void unserialize(final DataInputStream dis) throws IOException {
+	public void unserialize(final DataInputStream dis, final int version) throws IOException {
 		this.id = UUID.fromString(dis.readUTF());
 		final int n = dis.readInt();
 		this.mods = new ArrayList<>();

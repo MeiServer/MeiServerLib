@@ -17,17 +17,20 @@ public class Mod implements DiscordSerializable {
 	private String mod;
 	private String version;
 	private List<DistributeFile> files;
+	private int priority;
 
-	public Mod(final String par1Mod, final String par2Version, final List<DistributeFile> par3Files) {
+	public Mod(final String par1Mod, final String par2Version, final List<DistributeFile> par3Files,
+			final int par4Priority) {
 		this.id = UUID.randomUUID();
 		this.mod = par1Mod;
 		this.version = par2Version;
 		this.files = new ArrayList<>();
 		this.files.addAll(par3Files);
+		this.priority = par4Priority;
 	}
 
 	protected Mod() {
-		this(null, null, new ArrayList<>());
+		this(null, null, new ArrayList<>(), 0);
 	}
 
 	public UUID getID() {
@@ -40,6 +43,10 @@ public class Mod implements DiscordSerializable {
 
 	public String getModName() {
 		return this.mod;
+	}
+
+	public int getPriority() {
+		return this.priority;
 	}
 
 	public List<DistributeFile> getFiles() {
@@ -87,10 +94,11 @@ public class Mod implements DiscordSerializable {
 		for (final DistributeFile file : this.files) {
 			dos.writeUTF(file.getID().toString());
 		}
+		dos.writeInt(priority);
 	}
 
 	@Override
-	public void unserialize(final DataInputStream dis) throws IOException {
+	public void unserialize(final DataInputStream dis, final int version) throws IOException {
 		this.id = UUID.fromString(dis.readUTF());
 		this.mod = dis.readUTF();
 		this.version = dis.readUTF();
@@ -98,6 +106,11 @@ public class Mod implements DiscordSerializable {
 		this.files = new ArrayList<>();
 		for (int i = 0; i < n; i++) {
 			this.files.add(MeiServerLib.instance().getDistributeFile(UUID.fromString(dis.readUTF())));
+		}
+		if (version >= 2) {
+			this.priority = dis.readInt();
+		} else {
+			this.priority = 0;
 		}
 	}
 }

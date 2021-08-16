@@ -14,7 +14,7 @@ import r3qu13m.mei.lib.DiscordSerializable;
 import r3qu13m.mei.lib.MeiServerLib;
 
 public class DiscordStoredData implements DiscordSerializable {
-	private static final int CURRENT_VERSION = 1;
+	private static final int CURRENT_VERSION = 2;
 
 	private ModPackSequence mpSeq;
 	private Set<ModPack> modPacks;
@@ -22,7 +22,6 @@ public class DiscordStoredData implements DiscordSerializable {
 	private Set<DistributeFile> files;
 	private Set<MeiPlayer> players;
 	private String ip;
-	private int version;
 
 	public DiscordStoredData() {
 		this.init();
@@ -35,7 +34,6 @@ public class DiscordStoredData implements DiscordSerializable {
 		this.files = new HashSet<>();
 		this.players = new HashSet<>();
 		this.ip = "";
-		this.version = DiscordStoredData.CURRENT_VERSION;
 	}
 
 	public void setModPackSequence(final ModPackSequence obj) {
@@ -94,12 +92,12 @@ public class DiscordStoredData implements DiscordSerializable {
 		return ret;
 	}
 
-	private <T extends DiscordSerializable> Set<T> readSet(final DataInputStream dis, final Class<T> clazz)
-			throws IOException {
+	private <T extends DiscordSerializable> Set<T> readSet(final DataInputStream dis, final Class<T> clazz,
+			final int version) throws IOException {
 		final int size = dis.readInt();
 		final Set<T> ret = new HashSet<>();
 		for (int i = 0; i < size; i++) {
-			ret.add(DiscordSerializable.unserialize(dis, clazz));
+			ret.add(DiscordSerializable.unserialize(dis, clazz, version));
 		}
 		return ret;
 	}
@@ -124,21 +122,19 @@ public class DiscordStoredData implements DiscordSerializable {
 	}
 
 	@Override
-	public void unserialize(final DataInputStream dis) throws IOException {
+	public void unserialize(final DataInputStream dis, final int unused) throws IOException {
 		this.init();
-		this.version = dis.readInt();
-		if (this.version >= 1) {
-			this.setPlayers(this.readSet(dis, MeiPlayer.class));
-			this.setFiles(this.readSet(dis, DistributeFile.class));
-			MeiServerLib.instance()
-					.setDistributeFileMap(this.genCorrespondingMap(this.getFiles(), DistributeFile::getID)::get);
-			this.setMods(this.readSet(dis, Mod.class));
-			MeiServerLib.instance().setModMap(this.genCorrespondingMap(this.getMods(), Mod::getID)::get);
-			this.setModPacks(this.readSet(dis, ModPack.class));
-			MeiServerLib.instance().setModPackMap(this.genCorrespondingMap(this.getModPacks(), ModPack::getID)::get);
-			this.setModPackSequence(DiscordSerializable.unserialize(dis, ModPackSequence.class));
-			this.ip = dis.readUTF();
-		}
+		int version = dis.readInt();
+		this.setPlayers(this.readSet(dis, MeiPlayer.class, version));
+		this.setFiles(this.readSet(dis, DistributeFile.class, version));
+		MeiServerLib.instance()
+				.setDistributeFileMap(this.genCorrespondingMap(this.getFiles(), DistributeFile::getID)::get);
+		this.setMods(this.readSet(dis, Mod.class, version));
+		MeiServerLib.instance().setModMap(this.genCorrespondingMap(this.getMods(), Mod::getID)::get);
+		this.setModPacks(this.readSet(dis, ModPack.class, version));
+		MeiServerLib.instance().setModPackMap(this.genCorrespondingMap(this.getModPacks(), ModPack::getID)::get);
+		this.setModPackSequence(DiscordSerializable.unserialize(dis, ModPackSequence.class, version));
+		this.ip = dis.readUTF();
 	}
 
 }

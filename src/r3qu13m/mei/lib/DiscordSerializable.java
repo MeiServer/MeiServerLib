@@ -17,7 +17,7 @@ import java.util.zip.InflaterInputStream;
 public interface DiscordSerializable {
 	public void serialize(DataOutputStream dos) throws IOException;
 
-	public void unserialize(DataInputStream dis) throws IOException;
+	public void unserialize(DataInputStream dis, int version) throws IOException;
 
 	public static <T> String serialize(final T obj) {
 		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -40,7 +40,7 @@ public interface DiscordSerializable {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T> T unserialize(final String encodedData, final Class<T> cls) {
+	public static <T> T unserialize(final String encodedData, final Class<T> cls, final int version) {
 		final ByteArrayInputStream bis = new ByteArrayInputStream(Base64.getDecoder().decode(encodedData));
 		final DataInputStream dis = new DataInputStream(new InflaterInputStream(bis));
 		T obj = null;
@@ -52,7 +52,7 @@ public interface DiscordSerializable {
 				final Constructor<T> constructor = cls.getDeclaredConstructor();
 				constructor.setAccessible(true);
 				obj = constructor.newInstance();
-				((DiscordSerializable) obj).unserialize(dis);
+				((DiscordSerializable) obj).unserialize(dis, version);
 			} else {
 				throw new RuntimeException("The specified object is not unserializable");
 			}
@@ -63,14 +63,14 @@ public interface DiscordSerializable {
 		return obj;
 	}
 
-	public static <T extends DiscordSerializable> T unserialize(final DataInputStream dis, final Class<T> cls)
-			throws IOException {
+	public static <T extends DiscordSerializable> T unserialize(final DataInputStream dis, final Class<T> cls,
+			final int version) throws IOException {
 		T ret = null;
 		try {
 			final Constructor<T> constructor = cls.getDeclaredConstructor();
 			constructor.setAccessible(true);
 			ret = constructor.newInstance();
-			ret.unserialize(dis);
+			ret.unserialize(dis, version);
 			return ret;
 		} catch (IllegalArgumentException | NoSuchMethodException | SecurityException | InstantiationException
 				| IllegalAccessException | InvocationTargetException e) {

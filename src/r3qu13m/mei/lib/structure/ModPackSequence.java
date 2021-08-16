@@ -52,7 +52,7 @@ public class ModPackSequence implements DiscordSerializable {
 	}
 
 	@Override
-	public void unserialize(final DataInputStream dis) throws IOException {
+	public void unserialize(final DataInputStream dis, final int version) throws IOException {
 		final int size = dis.readInt();
 		this.seq = new LinkedList<>();
 		for (int i = 0; i < size; i++) {

@@ -60,7 +60,7 @@ public class MeiPlayer implements DiscordSerializable {
 	}
 
 	@Override
-	public void unserialize(final DataInputStream dis) throws IOException {
+	public void unserialize(final DataInputStream dis, final int version) throws IOException {
 		this.id = UUID.fromString(dis.readUTF());
 		this.name = dis.readUTF();
 		this.discordId = dis.readUTF();
