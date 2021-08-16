@@ -2,6 +2,7 @@ package r3qu13m.mei.lib;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,11 +51,24 @@ public class MPVec {
 
 	public MPVec composite(final MPVec other) {
 		final Map<UUID, OperationType> packDiff = new HashMap<>();
-		final Set<UUID> files = this.packDiff.keySet();
-		files.addAll(other.packDiff.keySet());
-		files.forEach(x -> {
-			packDiff.put(x, this.getType(x).composite(other.getType(x)));
-		});
+		Set<UUID> fromSet = this.packDiff.keySet();
+		Set<UUID> toSet = other.packDiff.keySet();
+
+		Set<UUID> intersectionSet = new HashSet<>();
+		intersectionSet.addAll(fromSet);
+		intersectionSet.retainAll(toSet);
+		intersectionSet.forEach(uuid -> packDiff.put(uuid, OperationType.IDENTITY));
+
+		Set<UUID> addSet = new HashSet<>();
+		addSet.addAll(toSet);
+		addSet.removeAll(fromSet);
+		addSet.forEach(uuid -> packDiff.put(uuid, OperationType.ADD));
+
+		Set<UUID> delSet = new HashSet<>();
+		delSet.addAll(fromSet);
+		delSet.removeAll(toSet);
+		delSet.forEach(uuid -> packDiff.put(uuid, OperationType.DELETE));
+
 		return new MPVec(packDiff);
 	}
 
