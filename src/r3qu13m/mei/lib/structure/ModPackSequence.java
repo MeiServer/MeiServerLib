@@ -3,6 +3,7 @@ package r3qu13m.mei.lib.structure;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -23,11 +24,22 @@ public class ModPackSequence implements DiscordSerializable {
 		this.seq.add(pack);
 	}
 
+	public List<ModPack> getModPackList() {
+		return Collections.unmodifiableList(this.seq);
+	}
+
 	public Optional<ModPack> getLatestPack() {
 		if (this.seq.isEmpty()) {
 			return Optional.empty();
 		}
 		return Optional.ofNullable(this.seq.get(this.seq.size() - 1));
+	}
+
+	public Optional<ModPack> getFirstPack() {
+		if (this.seq.isEmpty()) {
+			return Optional.empty();
+		}
+		return Optional.ofNullable(this.seq.get(0));
 	}
 
 	public MPVec getDifference(final ModPack fromPack, final ModPack toPack) {
