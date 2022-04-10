@@ -8,6 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Logger;
 
 public class Discord {
 	private String token;
@@ -37,6 +38,11 @@ public class Discord {
 	}
 
 	public Optional<String> get(final String path) throws InterruptedException, ExecutionException, IOException {
+		return this.get(path, 5);
+	}
+
+	public Optional<String> get(final String path, final int ttl)
+			throws InterruptedException, ExecutionException, IOException {
 		final HttpURLConnection con = (HttpURLConnection) new URL("https://discordapp.com/api/v9" + path)
 				.openConnection();
 		con.addRequestProperty("Authorization", this.token);
@@ -57,8 +63,20 @@ public class Discord {
 		}
 
 		br.close();
+		final String s = sb.toString();
 
-		return Optional.of(sb.toString());
+		if (s.length() == 0) {
+			final Logger log = MeiLogger.getLogger();
+			log.warning("Failed to access to discord");
+			if (ttl == 1) {
+				return Optional.empty();
+			}
+			log.warning(String.format("Retrying...(remain %d)", ttl - 1));
+			Thread.sleep(1000);
+			return this.get(path, ttl - 1);
+		}
+
+		return Optional.of(s);
 	}
 
 	public void clearToken() {
