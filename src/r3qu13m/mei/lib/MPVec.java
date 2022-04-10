@@ -76,9 +76,7 @@ public class MPVec {
 		final Map<UUID, OperationType> ret = new HashMap<>();
 		for (final UUID key : this.packDiff.keySet()) {
 			final OperationType val = this.packDiff.get(key);
-			if (val != OperationType.IDENTITY) {
-				ret.put(key, val);
-			}
+			ret.put(key, val);
 		}
 		return Collections.unmodifiableMap(ret);
 	}
