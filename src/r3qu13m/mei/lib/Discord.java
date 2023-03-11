@@ -58,8 +58,13 @@ public class Discord {
 		final InputStream is = con.getInputStream();
 		final BufferedReader br = new BufferedReader(new InputStreamReader(is));
 		final StringBuilder sb = new StringBuilder();
-		while (br.ready()) {
-			sb.append(br.readLine());
+		
+		while (true) {
+			String buf = br.readLine();
+			if (buf == null) {
+				break;
+			}
+			sb.append(buf);
 		}
 
 		br.close();
