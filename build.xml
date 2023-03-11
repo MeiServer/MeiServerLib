@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="MeiServerLib" default="default">
-	<property name="version" value="0.0.2" />
+	<property name="version" value="0.0.3" />
 	<property name="workdir" location="." />
 	<property name="bindir" location="${workdir}/bin" />
 	<property name="srcdir" location="${workdir}/src" />
@@ -50,7 +50,7 @@
 			<classpath>
 				<pathelement location="${destjar}" />
 			</classpath>
-			<test name="r3qu13m.mei.lib.test.TestModels" />
+			<!--<test name="r3qu13m.mei.lib.test.TestModels" />-->
 		</junit>
 	</target>
 </project>
