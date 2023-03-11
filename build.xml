@@ -8,6 +8,10 @@
 	<property name="releasedir" location="${workdir}/releases" />
 	<property name="destjar" location="${releasedir}/MeiServerLib_v${version}.jar" />
 
+	<condition property="bindir.exists">
+		<available file="${bindir}" type="dir"/>
+	</condition>
+
 	<pathconvert property="lib.classpath">
 		<path>
 			<fileset id="lib.classpath.set" dir="${libdir}">
@@ -22,6 +26,7 @@
 	</target>
 
 	<target name="build">
+		<mkdir dir="${bindir}" />
 		<javac destdir="${bindir}" includeantruntime="false">
 			<src path="${srcdir}" />
 			<classpath>
@@ -37,11 +42,9 @@
 		</jar>
 	</target>
 
-	<target name="clean">
+	<target name="clean" if="bindir.exists">
 		<delete>
-			<fileset dir="bin/">
-				<include name="*.class" />
-			</fileset>
+			<fileset dir="${bindir}" includes="**/*.class" />
 		</delete>
 	</target>
 
