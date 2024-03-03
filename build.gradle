@@ -1,0 +1,36 @@
+plugins {
+  id 'com.github.johnrengelman.shadow' version '8.1.1'
+  id 'java'
+  id 'java-library'
+}
+
+
+repositories {
+    mavenCentral()
+    maven {
+        url "https://nexus.velocitypowered.com/repository/maven-public/"
+    }
+}
+
+dependencies {
+    api 'commons-codec:commons-codec:1.15'
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+
+def version = "0.0.3";
+
+sourceSets.main {
+    java.srcDirs = files("src")
+}
+
+jar {
+    archiveFileName = "${project.name}_v${version}.min.jar"
+    destinationDirectory = file("${projectDir}/releases")
+}
+
+
+shadowJar {
+    archiveFileName = "${project.name}_v${version}.jar"
+    destinationDirectory = jar.destinationDirectory
+}
